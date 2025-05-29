@@ -1,0 +1,1 @@
+os.execute(table.concat(arg, " ", 1))

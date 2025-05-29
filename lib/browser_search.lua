@@ -1,0 +1,1 @@
+os.execute('xdg-open https://duckduckgo.com/?q='..table.concat(arg, "%20", 1))

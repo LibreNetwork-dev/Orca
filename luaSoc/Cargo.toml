@@ -1,0 +1,11 @@
+[package]
+name = "sockets"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+name = "luaSoc"
+crate-type = ["cdylib"]
+
+[dependencies]
+mlua = {version="0.10.5", features=["luajit", "mlua_derive", "module"]}
