@@ -1,3 +1,10 @@
+# NEW SPECS 
+play < query > < flags (kill, pause, etc.) >
+search < query >
+exec < command >
+
+
+
 # Commands
 The following commands exist     
 

@@ -84,91 +84,22 @@ fn main() {
                             .iter()
                             .filter_map(|&key| Keytochar(key))
                             .collect();
-                        if c_chars.starts_with(';') {
-                            if let Some(c) = c_chars.chars().nth(1) {
-                                let args: String = c_chars.chars().skip(2).collect();
-                                let args_ws: Vec<String> = args
-                                    .split_whitespace()
-                                    .map(|s| s.to_string())
-                                    .collect();
-                
-                                match c {
-                                    'e' => {
-                                        let args = args.clone();
-                                        if cfg!(target_os = "windows") {
-                                            thread::spawn(move || {
-                                                Command::new("cmd")
-                                                    .args(&["/C", &args])
-                                                    .spawn()
-                                                    .expect("failed to spawn command");
-                                            });
-                                        } else {
-                                            thread::spawn(move || {
-                                                Command::new("sh")
-                                                    .arg("-c")
-                                                    .arg(&args)
-                                                    .spawn()
-                                                    .expect("failed to spawn command");
-                                            });
-                                        }
-                                    }
-                                    's' => {
-                                        thread::spawn(move || {
-                                            Command::new("luajit") // luajit is preinstalled by /deps/*
-                                                .args(&["lib/browser_search.lua"])
-                                                .args(&args_ws)
-                                                .status()
-                                                .expect("failed to exec search");
-                                        });
-                                    }
-                                    'p' => {;
-                                        thread::spawn(move || {
-                                            Command::new("luajit")
-                                                .args(&["lib/player_search.lua"])
-                                                .args(&args_ws)
-                                                .status()
-                                                .expect("failed to exec play");
-                                        });
-                                    }
-                                    _ => {}
-                                }
-                            }
-                        } else if c_chars.starts_with('/'){
-                            if let Some(c) = c_chars.chars().nth(1) {
-                                let args: String = c_chars.chars().skip(2).collect();
-                                let args_ws: Vec<String> = args
-                                    .split_whitespace()
-                                    .map(|s| s.to_string())
-                                    .collect();
-                                
-                                match c {
-                                    // /k stops audio
-                                    'k' => {
-                                        thread::spawn(move || {
-                                            Command::new("luajit")
-                                                .args(&["lib/stopmpv.lua"])
-                                                .args(&args_ws)
-                                                .status()
-                                                .expect("failed to kill mpv");
-                                        });
-                                    } 
-                                    // p pauses (well, it should)
-                                    'p' => {
-                                        thread::spawn(move || {
-                                            Command::new("luajit")
-                                            .args(&["lib/pausempv.lua"])
-                                            .args(&args_ws)
-                                            .status()
-                                            .expect("failed to pause audio");
+                        
+                        let mut parts = c_chars.split_whitespace();
 
-                                        });
-                                    }
-                                    _ => {}
-                                };
-                            }                   
+
+                        if let Some(first) = parts.next() {
+                            let script = format!("lib/{}.lua", first); 
+                            let args_ws: Vec<String> = parts.map(|s| s.to_string()).collect();
+                        
+                            thread::spawn(move || {
+                                Command::new("luajit")
+                                    .arg(&script)
+                                    .args(&args_ws)
+                                    .spawn() 
+                                    .expect("failed to spawn luajit");
+                            });
                         }
-                
-                        return;
                     }
                 }
                 
