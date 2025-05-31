@@ -152,6 +152,7 @@ fn main() {
                                                 .expect("failed to kill mpv");
                                         });
                                     } 
+                                    // p pauses (well, it should)
                                     'p' => {
                                         thread::spawn(move || {
                                             Command::new("luajit")

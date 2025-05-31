@@ -47,5 +47,7 @@ else
     os.execute(dl)
 end
 
-local play = "mpv --no-video --no-config --term-playing-msg=played --keep-open=no --input-ipc-server=/tmp/mpvsocket '" .. filePath .. "'"
-os.execute(play)
+-- no config b/c the user, is dumb
+-- input-default-bindings=no b/c the program is dumb
+-- remove --really-quiet to get output back
+os.execute("mpv --no-video  --really-quiet --input-default-bindings=no --input-vo-keyboard=no --no-config --term-playing-msg=played --keep-open=no --input-ipc-server=/tmp/mpvsocket '" .. filePath .. "'")
