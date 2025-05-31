@@ -47,5 +47,5 @@ else
     os.execute(dl)
 end
 
-local play = "mpv --no-video --idle=no --term-playing-msg=played --keep-open=no --input-ipc-server=/tmp/mpvsocket '" .. filePath .. "'"
+local play = "mpv --no-video --no-config --term-playing-msg=played --keep-open=no --input-ipc-server=/tmp/mpvsocket '" .. filePath .. "'"
 os.execute(play)

@@ -152,8 +152,18 @@ fn main() {
                                                 .expect("failed to kill mpv");
                                         });
                                     } 
+                                    'p' => {
+                                        thread::spawn(move || {
+                                            Command::new("luajit")
+                                            .args(&["lib/pausempv.lua"])
+                                            .args(&args_ws)
+                                            .status()
+                                            .expect("failed to pause audio");
+
+                                        });
+                                    }
                                     _ => {}
-                                }
+                                };
                             }                   
                         }
                 
