@@ -1,19 +1,40 @@
+function absPath()
+    
+    local info = debug.getinfo(1, "S")
+    local path = info.source:sub(2)
+    local cwd = io.popen("pwd"):read("*l")
+
+    if not path:match("^/") then
+        path = cwd .. "/" .. path
+    end
+    return path:match("(.*/)")
+end
+
 function fileExists(pth)
-local f = io.open(pth, "r")
-    if f then
-    f:close()
-        return true
-    else 
-        return false
-    end 
+    local f = io.open(pth, "r")
+        if f then
+        f:close()
+            return true
+        else 
+            return false
+        end 
 end
 
 local home = os.getenv("HOME")
 local dir = home.."/.orca/cache/"
 
+
 if #arg == 0 then
-    print("Usage: luajit player_search.lua <query>")
+    print("Usage: luajit play.lua <query>")
     os.exit(1)
+end
+
+
+-- its digusting, but it works
+dofile(absPath().."helpers/stopmpv.lua")
+
+if arg[1] == "stop" then
+    return;
 end
 
 local fArgs = {}
@@ -23,7 +44,7 @@ for i = 1, #arg do
 end
 
 if #fArgs == 0 then
-    print("Usage: luajit player_search <query>")
+    print("Invalid cmd line args. Proper usage: luajit play.lua <query> <cmds> ")
     os.exit(1)
 end
 
