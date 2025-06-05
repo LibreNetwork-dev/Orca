@@ -1,5 +1,17 @@
 rm -rf dist/*
 
+cd keyLog 
+gcc main.c -o interface
+cp -r interface ../dist/interface
+cd .. 
+
+cd exec_inter 
+cargo build --release 
+cd target/release
+cp -r exec_inter ../../../dist/exec
+cd ../../../
+
+
 cd luaSoc
 cargo build --release
 mkdir -p ../dist/lib/link
@@ -8,8 +20,3 @@ cd ..
 
 cp -r lib/. dist/lib
 cp -r assets/ dist/assets
-
-cd inter
-cargo build --release 
-cd target/release
-cp orca_interface ../../../dist/orca
