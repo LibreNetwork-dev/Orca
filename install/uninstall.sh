@@ -1,3 +1,7 @@
+REAL_USER=$(logname)
+USER_HOME=$(eval echo "~$REAL_USER")
+
+
 if systemctl list-units --full -all | grep -q '^root-orca.service'; then
     echo "Stopping root-orca.service..."
     sudo systemctl kill root-orac.service || echo "Failed to kill root-orca.service, but moving on."
@@ -13,4 +17,4 @@ fi
 
 sudo rm -rf /usr/local/bin/orca/
 sudo rm /etc/systemd/system/root-orca.service
-sudo rm /etc/systemd/system/user-orca.service
+sudo rm $USER_HOME/.config/systemd/user/user-orca.service
