@@ -1,0 +1,11 @@
+[Unit]
+Description=A lightweight command execution daemon
+After=default.target
+
+[Service]
+ExecStart=/usr/local/bin/orca/exec
+WorkingDirectory=/usr/local/bin/orca/
+Type=simple
+
+[Install]
+WantedBy=default.target
