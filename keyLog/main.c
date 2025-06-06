@@ -1,4 +1,3 @@
-#define _GNU_SOURCE
 #include <fcntl.h>
 #include <linux/input.h>
 #include <dirent.h>
