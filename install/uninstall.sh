@@ -12,5 +12,5 @@ else
 fi
 
 sudo rm -rf /usr/local/bin/orca/
-sudo rm /etc/systemmd/system/root-orca.service
-sudo rm /etc/systemmd/system/user-orca.service
+sudo rm /etc/systemd/system/root-orca.service
+sudo rm /etc/systemd/system/user-orca.service
