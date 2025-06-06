@@ -14,6 +14,7 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 
+
 // 256 is some random number but be so for real if you have 256 keyboards then you are the problem
 #define DEVICES_BUFFER_AMOUNT 256
 // those who no windows support
@@ -22,6 +23,19 @@
 
 char *keymap[KEY_MAX + 1];
 
+void grab_all(int *fds, int count) {
+    for (int i = 0; i < count; ++i) {
+        if (ioctl(fds[i], EVIOCGRAB, 1) == -1) {
+            perror("grab failed");
+        }
+    }
+}
+
+void release_all(int *fds, int count) {
+    for (int i = 0; i < count; ++i) {
+        ioctl(fds[i], EVIOCGRAB, 0);
+    }
+}
 
 void init_keymap() {
     memset(keymap, 0, sizeof(keymap));
@@ -131,10 +145,12 @@ int main() {
                 while (read(fds[i], &ev, sizeof(ev)) > 0) {
                     if (ev.type == EV_KEY && ev.value == 1) {
                         if (ev.code == KEY_ESC) {
+                            grab_all(fds, fd_count);
                             recording = true;
                             index = 0;
                             buffer[0] = '\0';
                         } else if (ev.code == KEY_ENTER && recording) {
+                            release_all(fds, fd_count);
                             recording = false;
                             buffer[index] = '\0';
                             if (send_to_socket(buffer) != 0) {
