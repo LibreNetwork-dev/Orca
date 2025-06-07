@@ -2,7 +2,6 @@ local hr = arg[1]
 local min = arg[2]
 local alert = table.concat(arg, " ", 3)
 
-
 if not hr or not min then
     print("Usage: lua script.lua <hour> <minute> <msg>")
     os.exit(1)
@@ -23,7 +22,6 @@ if target_time <= os.time() then
 end
 
 local seconds_to_wait = os.difftime(target_time, os.time())
-
 os.execute("sleep " .. tonumber(seconds_to_wait))
 
 local function cmd_exist(cmd)
@@ -38,5 +36,5 @@ if cmd_exist("notify-send") then
 elseif cmd_exist("xmessage") then
     os.execute(string.format('xmessage "%s."', alert))
 else
-    print("No notification tool found.")
+    print("No notification tool found, tried xmessage and notify-send")
 end

@@ -1,3 +1,7 @@
+// get the 2008 posix standards, so the time thing works
+// the only other standard is from 1993 ok this is sorta new
+#define _POSIX_C_SOURCE 200809L
+
 #include <fcntl.h>
 #include <linux/input.h>
 #include <dirent.h>
@@ -12,11 +16,12 @@
 #include <stdbool.h>
 #include <sys/socket.h>
 #include <sys/un.h>
+#include <time.h>  
 
 
-// 256 is some random number but be so for real if you have 256 keyboards then you are the problem
+// arbitrary number. If this breaks ur setup, increase it.
 #define DEVICES_BUFFER_AMOUNT 256
-// those who no windows support
+
 #define DEVICE_PATH "/dev/input/"
 #define SOCKET_PATH "/tmp/orca_com.sock"
 
@@ -25,7 +30,7 @@ char *keymap[KEY_MAX + 1];
 void grab_all(int *fds, int count) {
     for (int i = 0; i < count; ++i) {
         if (ioctl(fds[i], EVIOCGRAB, 1) == -1) {
-            perror("grab failed");
+            perror("grab failed, is this running as root?");
         }
     }
 }
@@ -105,7 +110,6 @@ int main() {
     while ((de = readdir(dir))) {
         if (strncmp(de->d_name, "event", 5) == 0) {
             snprintf(devname, sizeof(devname), "%s%s", DEVICE_PATH, de->d_name);
-            // this opens a LOT of devices, i doubt all of them are keyboards. Doesnt cause any issues so im not fixing it
             if (is_keyboard(devname)) {
                 int fd = open(devname, O_RDONLY | O_NONBLOCK);
                 if (fd >= 0 && fd_count < DEVICES_BUFFER_AMOUNT) {
@@ -122,6 +126,10 @@ int main() {
     char buffer[512] = {0};
     size_t index = 0;
     bool recording = false;
+
+    struct timespec esc_timer = {0, 0};
+    // if 500 ms is too much for you then recompile with it changed, but 500 ms fits most setups
+    const int ESC_MS_CONST = 500;
 
     printf("Listening on %d devices\n", fd_count);
 
@@ -144,16 +152,25 @@ int main() {
                 while (read(fds[i], &ev, sizeof(ev)) > 0) {
                     if (ev.type == EV_KEY && ev.value == 1) {
                         if (ev.code == KEY_ESC) {
-                            grab_all(fds, fd_count);
-                            recording = true;
-                            index = 0;
-                            buffer[0] = '\0';
+                            struct timespec now;
+                            clock_gettime(CLOCK_MONOTONIC, &now);
+                            long diff_ms = (now.tv_sec - esc_timer.tv_sec) * 1000 +
+                                           (now.tv_nsec - esc_timer.tv_nsec) / 1000000;
+
+                            if (diff_ms <= ESC_MS_CONST) {
+                                grab_all(fds, fd_count);
+                                recording = true;
+                                index = 0;
+                                buffer[0] = '\0';
+                            }
+
+                            esc_timer = now;
                         } else if (ev.code == KEY_ENTER && recording) {
                             release_all(fds, fd_count);
                             recording = false;
                             buffer[index] = '\0';
                             if (send_to_socket(buffer) != 0) {
-                                perror("Could not connect to socket used for communication between the interface (/keyLog) and the executor (/exec_inter). This means commands will not work");
+                                perror("Could not connect to socket - no commands will work. If this is running as an installed systemd app, reboot. If that does not fix it, reinstall.");
                             }
                             index = 0;
                         } else if (recording && ev.code <= KEY_MAX && keymap[ev.code]) {
