@@ -173,7 +173,16 @@ int main() {
                                 perror("Could not connect to socket - no commands will work. If this is running as an installed systemd app, reboot. If that does not fix it, reinstall.");
                             }
                             index = 0;
-                        } else if (recording && ev.code <= KEY_MAX && keymap[ev.code]) {
+
+                        } 
+                        else if (ev.code == KEY_BACKSPACE && recording) {
+                            
+                            if (index > 0) {
+                                index--;
+                                buffer[index] = '\0'; 
+                            }
+                        }
+                        else if (recording && ev.code <= KEY_MAX && keymap[ev.code]) {
                             size_t len = strlen(keymap[ev.code]);
                             if (index + len < sizeof(buffer)) {
                                 strcpy(&buffer[index], keymap[ev.code]);

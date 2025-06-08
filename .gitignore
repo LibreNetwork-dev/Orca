@@ -1,2 +1,4 @@
 dist/
-inter/target/
+exec_inter/target/
+keyLog/interface
+luaSoc/target
