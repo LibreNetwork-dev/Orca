@@ -36,6 +36,7 @@ fn main() {
                                 Command::new("luajit")
                                     .arg(&script_path)
                                     .args(&args)
+                                    .current_dir("/usr/local/bin/orca")
                                     .spawn() 
                                     .expect("failed to spawn luajit");
                             });
