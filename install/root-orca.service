@@ -5,6 +5,8 @@ Description=The keyboard listener interface for orca
 ExecStart=/usr/local/bin/orca/interface
 WorkingDirectory=/usr/local/bin/orca/
 Type=simple
+Environment=DISPLAY=:0
+Environment=XDG_RUNTIME_DIR=%t
 
 [Install]
 WantedBy=multi-user.target
