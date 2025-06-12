@@ -29,6 +29,6 @@ There are 6 commands created by default.
 1. clip || clip Hello world
 2. exec || exec echo hi
 3. play || play not like us kendrick lamar 
-4. remind || remind 13:05 water the plants
+4. remind || remind 13 05 water the plants
 5. search || search what is the time    
 6. playcache || playcache DDevil system of a down
