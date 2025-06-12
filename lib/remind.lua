@@ -2,8 +2,8 @@ local time = {}
 for str in string.gmatch(arg[1], "([^"..";".."]+)") do
     table.insert(time, str)
 end
-local hr = time[1]
-local min = time[2]
+hr = time[1] 
+min = time[2]
 local alert = table.concat(arg, " ", 2)
 
 -- this entire chunk makes it possible to do things like 018:012 but i dont really care lol
