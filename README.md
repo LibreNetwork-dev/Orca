@@ -11,7 +11,7 @@
 1. Run ./build.sh, assuming you have deps installed 
 
 # Users Manual
-To access the mode where you run scripts, press escape twice in rapid succession     
+To access the mode where you run scripts, press escape twice in rapid succession (500ms)        
 To get out of execution mode, press enter      
 To extend the scripts avalible, modify /usr/local/bin/orca/lib/   
 Scripts are ran based off of their filename. To create a command called 'example', create a file called example.lua   
