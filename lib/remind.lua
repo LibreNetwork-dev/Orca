@@ -1,5 +1,5 @@
 local time = {}
-for str in string.gmatch(arg[1], "([^"..":".."]+)") do
+for str in string.gmatch(arg[1], "([^"..";".."]+)") do
     table.insert(time, str)
 end
 local hr = time[1]
