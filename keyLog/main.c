@@ -169,6 +169,15 @@ int main() {
                             release_all(fds, fd_count);
                             recording = false;
                             buffer[index] = '\0';
+                            
+                            struct timespec ts;
+                            ts.tv_sec = 0;
+                            ts.tv_nsec = 50 * 1000 * 1000; // 500 million nanoseconds = 0.5 seconds
+                            nanosleep(&ts, NULL);
+                            
+                            esc_timer.tv_sec = 0;
+                            esc_timer.tv_nsec = 0;
+                            
                             if (send_to_socket(buffer) != 0) {
                                 perror("Could not connect to socket - no commands will work. If this is running as an installed systemd app, reboot. If that does not fix it, reinstall.");
                             }
