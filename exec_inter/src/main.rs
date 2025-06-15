@@ -33,12 +33,15 @@ fn main() {
                             println!("Running: luajit {} {:?}", script_path, args);
 
                             thread::spawn(move || {
-                                Command::new("luajit")
+                                let mut child = Command::new("luajit")
                                     .arg(&script_path)
                                     .args(&args)
                                     .current_dir("/usr/local/bin/orca")
                                     .spawn() 
                                     .expect("failed to spawn luajit");
+
+                                let status = child.wait().expect("failed to wait on luajit subproc");
+
                             });
                         }
                     }
