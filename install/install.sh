@@ -38,16 +38,14 @@ chown "$REAL_USER":"$REAL_USER" "$USER_SYSTEMD_DIR/user-orca.service"
 
 echo "[*] Reloading systemd..."
 sudo systemctl daemon-reload
-su - "$REAL_USER" -c 'systemctl --user daemon-reload'
+sudo loginctl enable-linger "$REAL_USER"
+sudo runuser -l "$REAL_USER" -c 'XDG_RUNTIME_DIR=/run/user/$(id -u) systemctl --user daemon-reload'
 
 echo "[*] Enabling and starting services..."
 
 sudo systemctl enable --now root-orca.service
-su - "$REAL_USER" -c 'systemctl --user enable --now user-orca.service'
-
+sudo runuser -l "$REAL_USER" -c 'XDG_RUNTIME_DIR=/run/user/$(id -u) systemctl --user enable --now user-orca.service'
 
 echo "[✓] Done! Use these to check status:"
 echo "    sudo systemctl status root-orca.service"
 echo "    systemctl --user status user-orca.service"
-
-
