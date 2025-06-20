@@ -7,7 +7,7 @@ echo "[*] Installing services..."
 # idk if tihs works but it makes me feel good
 if systemctl list-units --full -all | grep -q '^root-orca.service'; then
     echo "Stopping root-orca.service..."
-    sudo systemctl kill root-orac.service || echo "Failed to kill root-orca.service, but moving on."
+    sudo systemctl kill root-orca.service || echo "Failed to kill root-orca.service, but moving on."
 else
     echo "root-orca.service not found. Skipping."
 fi
