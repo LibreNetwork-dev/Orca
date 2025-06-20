@@ -38,12 +38,13 @@ chown "$REAL_USER":"$REAL_USER" "$USER_SYSTEMD_DIR/user-orca.service"
 
 echo "[*] Reloading systemd..."
 sudo systemctl daemon-reload
-sudo -u "$REAL_USER" systemctl --user daemon-reload
+su - "$REAL_USER" -c 'systemctl --user daemon-reload'
 
 echo "[*] Enabling and starting services..."
 
 sudo systemctl enable --now root-orca.service
-sudo -u "$REAL_USER" systemctl --user enable --now user-orca.service
+su - "$REAL_USER" -c 'systemctl --user enable --now user-orca.service'
+
 
 echo "[✓] Done! Use these to check status:"
 echo "    sudo systemctl status root-orca.service"
