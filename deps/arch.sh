@@ -1,4 +1,1 @@
-sudo pacman -Sy rofi
-sudo pacman -Sy luajit
-sudo pacman -Sy mpv
-sudo pacman -Sy yt-dlp
+sudo pacman -Sy rofi luajit mpv yt-dlp
