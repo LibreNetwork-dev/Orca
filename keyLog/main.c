@@ -18,10 +18,7 @@
 #include <sys/un.h>
 #include <time.h>  
 
-
-// arbitrary number. If this breaks ur setup, increase it.
 #define DEVICES_BUFFER_AMOUNT 256
-
 #define DEVICE_PATH "/dev/input/"
 #define SOCKET_PATH "/tmp/orca_com.sock"
 
@@ -126,9 +123,9 @@ int main() {
     char buffer[512] = {0};
     size_t index = 0;
     bool recording = false;
+    bool esc_locked = false; // lock esc to prevent flood
 
     struct timespec esc_timer = {0, 0};
-    // if 500 ms is too much for you then recompile with it changed, but 500 ms fits most setups
     const int ESC_MS_CONST = 500;
 
     printf("Listening on %d devices\n", fd_count);
@@ -157,41 +154,38 @@ int main() {
                             long diff_ms = (now.tv_sec - esc_timer.tv_sec) * 1000 +
                                            (now.tv_nsec - esc_timer.tv_nsec) / 1000000;
 
-                            if (diff_ms <= ESC_MS_CONST) {
+                            if (!recording && !esc_locked && diff_ms <= ESC_MS_CONST && esc_timer.tv_sec != 0) {
                                 grab_all(fds, fd_count);
                                 recording = true;
+                                esc_locked = true;  
                                 index = 0;
                                 buffer[0] = '\0';
+                                esc_timer.tv_sec = 0;
+                                esc_timer.tv_nsec = 0;
+                            } else if (!recording) {
+                                esc_timer = now;
                             }
-
-                            esc_timer = now;
                         } else if (ev.code == KEY_ENTER && recording) {
                             release_all(fds, fd_count);
                             recording = false;
+                            esc_locked = false;  
                             buffer[index] = '\0';
-                            
+
                             struct timespec ts;
                             ts.tv_sec = 0;
-                            ts.tv_nsec = 50 * 1000 * 1000; // 500 million nanoseconds = 0.5 seconds
+                            ts.tv_nsec = 50 * 1000 * 1000; // 50 ms
                             nanosleep(&ts, NULL);
-                            
-                            esc_timer.tv_sec = 0;
-                            esc_timer.tv_nsec = 0;
-                            
+
                             if (send_to_socket(buffer) != 0) {
                                 perror("Could not connect to socket - no commands will work. If this is running as an installed systemd app, reboot. If that does not fix it, reinstall.");
                             }
                             index = 0;
-
-                        } 
-                        else if (ev.code == KEY_BACKSPACE && recording) {
-                            
+                        } else if (ev.code == KEY_BACKSPACE && recording) {
                             if (index > 0) {
                                 index--;
-                                buffer[index] = '\0'; 
+                                buffer[index] = '\0';
                             }
-                        }
-                        else if (recording && ev.code <= KEY_MAX && keymap[ev.code]) {
+                        } else if (recording && ev.code <= KEY_MAX && keymap[ev.code]) {
                             size_t len = strlen(keymap[ev.code]);
                             if (index + len < sizeof(buffer)) {
                                 strcpy(&buffer[index], keymap[ev.code]);
