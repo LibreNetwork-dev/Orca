@@ -108,7 +108,7 @@ int main() {
         if (strncmp(de->d_name, "event", 5) == 0) {
             snprintf(devname, sizeof(devname), "%s%s", DEVICE_PATH, de->d_name);
             if (is_keyboard(devname)) {
-                int fd = open(devname, O_RDONLY | O_NONBLOCK);
+                int fd = open(devname, O_RDWR | O_NONBLOCK);
                 if (fd >= 0 && fd_count < DEVICES_BUFFER_AMOUNT) {
                     fds[fd_count++] = fd;
                     printf("Opened %s\n", devname);
