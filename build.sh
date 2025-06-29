@@ -19,4 +19,3 @@ cp target/release/libluaSoc.so ../dist/lib/link/luaSoc.so
 cd ..
 
 cp -r lib/. dist/lib
-cp -r assets/ dist/assets
